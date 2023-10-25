@@ -12,6 +12,8 @@ import { StrictMode, Suspense } from 'react'
 ReactDOM.createRoot(document.getElementById('root')).render(
     <StrictMode>  
       <>
+      <Suspense fallback={null}>
+
         <Canvas
             camera={{
               fov: 45,
@@ -20,12 +22,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               position: [ 0, 2, 10 ]
             }}
           >  
-          <Suspense fallback={null}>
           <Bvh>
               <HalloweenScene />
           </Bvh>
-          </Suspense>
         </Canvas>
+        </Suspense>
+
         <Loader/>
        
       

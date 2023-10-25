@@ -1,4 +1,4 @@
-import { OrbitControls, useGLTF, useTexture, Stats, Float, meshBounds, Text3D, Html, Clouds, Cloud} from '@react-three/drei'
+import { OrbitControls, useGLTF, useTexture, Stats, Float, meshBounds, Text3D, Loader, Clouds, Cloud} from '@react-three/drei'
 import { Canvas, useFrame, extend, useLoader, useThree,} from "@react-three/fiber";
 import pumpkin from './model/pumpkin2.glb'
 import ghost from './model/ghost2.glb'
@@ -11,6 +11,8 @@ import { gsap } from "gsap";
 import halloweenFont from './fonts/CF Halloween_Regular.json'
 import matcapTexture from './textures/9CC338_4E671A_799F27_8CAC2C-preview.png'
 import '../index.css'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+
 
 
 
@@ -106,10 +108,10 @@ const HalloweenScene = () => {
         // ghostRef4.current.position.z += Math.sin(clock.elapsedTime) * 0.05
         ghostRef4.current.rotation.y -= Math.cos(clock.elapsedTime) * 0.01
         //   
+        clouds.current.position.y = Math.sin(clock.elapsedTime ) * 0.3
 
         gl.setClearColor('#050202')
 
-        clouds.current.position.y = Math.sin(clock.elapsedTime ) * 0.3
     })
 
 
@@ -117,13 +119,14 @@ const HalloweenScene = () => {
   return (
     <>
     <Suspense fallback={null}>
+      <group>
+
       <Clouds material={THREE.MeshBasicMaterial} ref={clouds}>
           <Cloud segments={10} bounds={[10, 2, 0]} volume={5} color="#b8998c" position={[0,0,-4]} fade={60} />
       </Clouds>
 
       <ambientLight intensity={0.5} color={'#eb5534'}/>
       <directionalLight color={'red'} position={[4,5,-2]} intensity={1}/>
-
       
         <Float
         speed={1} 
@@ -136,22 +139,25 @@ const HalloweenScene = () => {
 
 
             {/* pumpkin */}
-            <group  dispose={null} scale={0.7}>        
-              <group name="Scene" ref={pumpkinRef}  >
-                <mesh
-                  name="pumpkin2"
-                  castShadow
-                  receiveShadow
-                  geometry={nodes.pumpkin2.geometry}
-                  position={[-0.092, 0.8, -0.252]}
-                >
-                  <meshStandardMaterial map={pumpkinTexture} side={THREE.DoubleSide} />
-                </mesh>
-              </group>
-            </group>
-
-          
         
+              <group  dispose={null} scale={0.7}>        
+                <group name="Scene" 
+                raycast={meshBounds}
+                ref={pumpkinRef} 
+                  >
+                  <mesh
+                    name="pumpkin2"
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.pumpkin2.geometry}
+                    position={[-0.092, 0.8, -0.252]}
+                  >
+                    <meshStandardMaterial map={pumpkinTexture} side={THREE.DoubleSide} />
+                  </mesh>
+                </group>
+              </group>
+        
+    
 
       <Text3D font={halloweenFont} position={[-2,2,0]}
         size={0.6}
@@ -283,19 +289,18 @@ const HalloweenScene = () => {
             />
           </group>
         </group>
-      </group>
+       </group>
 
-        <Html
-        style={{display:'flex', justifyContent:'flex-end', position:'absolute', right:'52%', bottom:'52%', color: 'white', gap:'20px'}}
-        wrapperClass ="text"
-       >
-        <img src='./assets/icons8-audio-50.png' alt='audioImg'/>
-        {/* <h1>audio on</h1> */}
-      </Html>
+      </group>
 
     </Suspense>
     </>
   )
 }
+
+useLoader.preload(GLTFLoader, pumpkin /* extensions */)
+useLoader.preload(GLTFLoader, ghost /* extensions */)
+
+
 
 export default HalloweenScene
